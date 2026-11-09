@@ -201,16 +201,39 @@ st.caption("O gráfico inclui “Outros” para que a composição fique complet
 # -----------------------------------------------------------------------------
 
 st.subheader("5. Boxplot: distribuição municipal por cor ou raça")
-st.write("O gráfico compara Brasil, Goiânia, Vitória, Belo Horizonte e Brasília para o meio de transporte selecionado.")
+st.write("O gráfico usa todos os municípios disponíveis na base para o meio de transporte selecionado, permitindo identificar outliers reais.")
 
-# Comparação fixa: Brasil e as quatro cidades, independentemente da UF escolhida.
-validos = base[base["Transporte"] == modal].dropna(subset=["Percentual"])
+# Usa a base completa (todos os municípios) para que haja dados suficientes
+# para o cálculo de outliers pelo método 1,5×IQR.
+base_boxplot = carregar_dados()
+validos = base_boxplot[base_boxplot["Transporte"] == modal].dropna(subset=["Percentual"])
 if validos.empty:
     st.info("Sem dados para o boxplot.")
 else:
-    fig = px.box(validos, x="Cor ou raça", y="Percentual", color="Cor ou raça", hover_data=["Local"], points="outliers", category_orders={"Cor ou raça": RACAS})
-    fig.update_traces(quartilemethod="linear")
-    fig.update_layout(showlegend=False, yaxis_title="Percentual municipal (%)")
+    fig = px.box(
+        validos,
+        x="Cor ou raça",
+        y="Percentual",
+        color="Cor ou raça",
+        hover_data=["Local"],
+        points="outliers",
+        category_orders={"Cor ou raça": RACAS},
+    )
+    fig.update_traces(
+        quartilemethod="linear",
+        jitter=0.5,           # dispersão horizontal dos pontos outliers
+        pointpos=0,           # centraliza os pontos sobre a caixa
+        marker=dict(
+            size=6,
+            opacity=0.6,
+            line=dict(width=1, color="white"),  # borda branca para separar pontos sobrepostos
+        ),
+    )
+    fig.update_layout(
+        showlegend=False,
+        yaxis_title="Percentual municipal (%)",
+        height=500,
+    )
     st.plotly_chart(fig, width="stretch")
 
 st.caption("Linha interna: mediana. Caixa: 50% centrais. Bigodes: valores dentro de 1,5 vez o intervalo interquartil a partir dos quartis. Pontos externos: outliers. Eles não demonstram congestionamento.")
