@@ -1,0 +1,11 @@
+GRUPO 5 — RECONSTRUÇÃO PARA TREINO
+
+Abra Treino_apresentacao.html no navegador: gráficos interativos, explicações e perguntas com respostas. Funciona sem internet.
+
+Painel completo: no terminal desta pasta, execute:
+python -m pip install -r requirements.txt
+python -m streamlit run app.py
+
+O arquivo app.py usa dados.py e a planilha na mesma pasta.
+
+Limitações: a base não traz tempo de deslocamento, renda ou regiões metropolitanas. Boxplot adaptado para percentuais municipais, com aviso. Fotos complementares não reproduzidas. Deploy não realizado; instruções no guia.
